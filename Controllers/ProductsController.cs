@@ -27,10 +27,20 @@ namespace Hero_Project.Controllers
         public ActionResult SearchProducts([FromQuery] string name) =>  Ok(new { productId = 111, name = name});
 
         [HttpPost] //localhost:5001/products (json form)
-        public ActionResult<Product> AddProduct([FromBody] Product model) => Ok(model);
+        public ActionResult<Product> AddProduct([FromBody] Product model) {
+            return CreatedAtAction(nameof(GetProductById), new {id = 111} , model); //return status 201
+        }
         
         [HttpPut("{id}")] //localhost:5001/products/123
-        public IActionResult UpdateProduct(int id,[FromForm] Product model ) => (id != model.id) ? BadRequest() : NoContent();       
+        public ActionResult<Product> UpdateProduct(int id,[FromForm] Product model ) {
+            if (id != model.id){
+                return BadRequest(); //return status 400
+            }
+            if (id != 1150){
+                return NotFound(); //return status 404
+            }
+            return model; //return model
+        }
     }
 
     //create Model for Product

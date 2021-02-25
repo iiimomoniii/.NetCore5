@@ -21,10 +21,6 @@ namespace Hero_Project.Controllers
         }
 
         [HttpGet("{id}")] //localhost:5001/products/123
-        public ActionResult GetProductById(int id)
-        {
-            return Ok(new { productId = id, name = "iPod"});
-        }
-        
+        public ActionResult GetProductById(int id) => Ok(new { productId = id, name = "iPod"});
     }
 }

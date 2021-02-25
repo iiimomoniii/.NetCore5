@@ -25,6 +25,16 @@ namespace Hero_Project.Controllers
 
         [HttpGet("search")] //localhost:5001/products/search?name=iWatch
         public ActionResult SearchProducts([FromQuery] string name) =>  Ok(new { productId = 111, name = name});
+
+        [HttpPost("")] //localhost:5001/products (body json)
+        public ActionResult<Product> AddProduct(Product model) => Ok(model);
         
+    }
+
+    //create Model for Product
+    public class Product {
+        public int id { get; set;}
+        public string name {get; set;}
+        public int price {get;set;}
     }
 }

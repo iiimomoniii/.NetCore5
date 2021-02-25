@@ -11,35 +11,20 @@ namespace Hero_Project.Controllers
     [Route("[controller]")] //...localhost:5001/products (dev)
     public class ProductsController : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
+        [HttpGet] //localhost:5001/products
+        public ActionResult<List<string>> GetProducts()
         {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
-
-        [HttpGet] //http method: get, post , put, patch, delete, ...
-        public IEnumerable<WeatherForecast> Get() //Action
-        {
-            var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateTime.Now.AddDays(index),
-                TemperatureC = rng.Next(-20, 55),
-                Summary = Summaries[rng.Next(Summaries.Length)]
-            })
-            .ToArray();
+            var products = new List<string>();
+            products.Add("iMac");
+            products.Add("iPhone");
+            return products;
         }
 
-        [HttpGet("name")] //http method: get, post , put, patch, delete, ...
-        public IEnumerable<WeatherForecast> Get2() //Action
+        [HttpGet("{id}")] //localhost:5001/products/123
+        public ActionResult GetProductById(int id)
         {
-            var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateTime.Now.AddDays(index),
-                TemperatureC = rng.Next(-20, 55),
-                Summary = Summaries[rng.Next(Summaries.Length)]
-            })
-            .ToArray();
+            return Ok(new { productId = id, name = "iPod"});
         }
+        
     }
 }

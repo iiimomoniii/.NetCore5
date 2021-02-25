@@ -22,5 +22,9 @@ namespace Hero_Project.Controllers
 
         [HttpGet("{id}")] //localhost:5001/products/123
         public ActionResult GetProductById(int id) => Ok(new { productId = id, name = "iPod"});
+
+        [HttpGet("search")] //localhost:5001/products/search?name=iWatch
+        public ActionResult SearchProducts([FromQuery] string name) =>  Ok(new { productId = 111, name = name});
+        
     }
 }

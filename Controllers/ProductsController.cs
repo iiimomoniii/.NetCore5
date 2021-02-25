@@ -29,6 +29,8 @@ namespace Hero_Project.Controllers
         [HttpPost] //localhost:5001/products (json form)
         public ActionResult<Product> AddProduct([FromBody] Product model) => Ok(model);
         
+        [HttpPut("{id}")] //localhost:5001/products/123
+        public IActionResult UpdateProduct(int id,[FromForm] Product model ) => (id != model.id) ? BadRequest() : NoContent();       
     }
 
     //create Model for Product

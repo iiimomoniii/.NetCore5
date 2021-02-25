@@ -41,6 +41,16 @@ namespace Hero_Project.Controllers
             }
             return model; //return model
         }
+
+        [HttpDelete("{id}")] //localhost:5001/products/123
+        public ActionResult<Product> DeleteProduct(int id)
+        {
+           if (id != 1150) {
+               return NotFound();
+           }
+           return NoContent();
+        }
+        
     }
 
     //create Model for Product

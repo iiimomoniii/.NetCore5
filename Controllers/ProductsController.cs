@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Hero_Project.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -11,6 +12,12 @@ namespace Hero_Project.Controllers
     [Route("[controller]")] //...localhost:5001/products (dev)
     public class ProductsController : ControllerBase
     {
+        public ProductsController(DatabaseContext databaseContext)
+        {
+            var result = databaseContext.Products.ToList();
+            var size = result.Count();
+        }
+
         [HttpGet] //localhost:5001/products
         public ActionResult<List<string>> GetProducts()
         {

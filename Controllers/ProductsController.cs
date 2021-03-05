@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Net;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -43,7 +44,9 @@ namespace Hero_Project.Controllers
 
         [HttpPost] //localhost:5001/products (json form)
         public ActionResult<Product> AddProduct([FromBody] Product model) {
-            return CreatedAtAction(nameof(GetProductById), new {id = 111} , model); //return status 201
+            databaseContext.Products.Add(model);
+            databaseContext.SaveChanges();
+            return StatusCode((int) HttpStatusCode.Created);
         }
         
         [HttpPut("{id}")] //localhost:5001/products/123
@@ -51,10 +54,23 @@ namespace Hero_Project.Controllers
             if (id != model.ProductId){
                 return BadRequest(); //return status 400
             }
-            if (id != 1150){
+
+            var result = databaseContext.Products.Find(id);
+
+            if (result == null){
                 return NotFound(); //return status 404
             }
-            return model; //return model
+
+            result.Name = model.Name;
+            result.Price = model.Price;
+            result.Stock = model.Stock;
+            result.CategoryId = model.CategoryId;
+            //Auto Mapper
+            //Mapster
+            databaseContext.Products.Update(result);
+            databaseContext.SaveChanges();
+
+            return NoContent(); //return model
         }
 
         [HttpDelete("{id}")] //localhost:5001/products/123

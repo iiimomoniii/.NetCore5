@@ -7,6 +7,9 @@ using Hero_Project.Data;
 using Hero_Project.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
+using Hero_Project.NetCore5.DTOs.Products;
+using Mapster;
 
 namespace Hero_Project.Controllers
 {
@@ -18,40 +21,57 @@ namespace Hero_Project.Controllers
         public ProductsController(DatabaseContext databaseContext) => this.databaseContext = databaseContext;
 
         [HttpGet] //localhost:5001/products
-        public ActionResult<IEnumerable<Product>> GetProducts()
+        //Return Values By ProductResponse
+        public ActionResult<IEnumerable<ProductResponse>> GetProducts()
         {
-           return databaseContext.Products.OrderByDescending(p => p.ProductId).ToList();
+        // Products.Include (p => p.category) joining data between Products and Category
+           return databaseContext.Products.Include(p => p.Category)
+           .OrderByDescending(p => p.ProductId)
+           // type of return data obj
+           .Select(ProductResponse.FromProduct)
+           .ToList();
         }
 
         [HttpGet("{id}")] //localhost:5001/products/123
-        public ActionResult<Product> GetProductById(int id) {
-            var result = databaseContext.Products.Find(id);
+        public ActionResult<ProductResponse> GetProductById(int id) {
+            // Products.Include (p => p.category) joining data between Products and Category
+            var result = databaseContext.Products.Include(p => p.Category)
+            //SingleOrDefault is WHERE in SQL if more and less then id will retern is null
+            //p => p.ProductId == id is return ONLY one productId is equal id
+            .SingleOrDefault(p => p.ProductId == id);
             if (result == null) {
                 return NotFound();
             } else {
-                return result;
+                //retun Product Obj is productId is equal id
+                return ProductResponse.FromProduct(result);
             }
 
         }
 
         [HttpGet("search")] //localhost:5001/products/search?name=iWatch
-        public ActionResult<IEnumerable<Product>> SearchProducts([FromQuery] string name = "") {
-            var result = databaseContext.Products
+        public ActionResult<IEnumerable<ProductResponse>> SearchProducts([FromQuery] string name = "") {
+            // Products.Include (p => p.category) joining data between Products and Category
+            var result = databaseContext.Products.Include(p => p.Category)
                          .Where(p => p.Name.ToLower().Contains(name.ToLower()))
-                          .ToList();
+                         //p => p.ProductId == id is return Name LIKE (SQL) name 
+                         .Select(ProductResponse.FromProduct)
+                         .ToList();
             return result;
         }
 
         [HttpPost] //localhost:5001/products (json form)
-        public ActionResult<Product> AddProduct([FromBody] Product model) {
-            databaseContext.Products.Add(model);
+        public ActionResult<Product> AddProduct([FromForm] ProductRequest productRequest) {
+            
+            //using mapster.7.1.5 map data from productRequest to product
+            var product = productRequest.Adapt<Product>();
+            databaseContext.Products.Add(product);
             databaseContext.SaveChanges();
             return StatusCode((int) HttpStatusCode.Created);
         }
         
         [HttpPut("{id}")] //localhost:5001/products/123
-        public ActionResult<Product> UpdateProduct(int id,[FromForm] Product model ) {
-            if (id != model.ProductId){
+        public ActionResult<Product> UpdateProduct(int id,[FromForm] ProductRequest productRequest) {
+            if (id != productRequest.ProductId){
                 return BadRequest(); //return status 400
             }
 
@@ -60,13 +80,10 @@ namespace Hero_Project.Controllers
             if (result == null){
                 return NotFound(); //return status 404
             }
+            
+            //map data usign mapster 7.1.5 between productRequest and result (source Adapt destination)
+            productRequest.Adapt(result);
 
-            result.Name = model.Name;
-            result.Price = model.Price;
-            result.Stock = model.Stock;
-            result.CategoryId = model.CategoryId;
-            //Auto Mapper
-            //Mapster
             databaseContext.Products.Update(result);
             databaseContext.SaveChanges();
 

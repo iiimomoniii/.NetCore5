@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Hero_Project.Data;
+using Hero_Project.NetCore5.Interfaces;
+using Hero_Project.NetCore5.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -34,11 +36,12 @@ namespace Hero_Project
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Hero_Project", Version = "v1" });
             });
-            // using Microsoft.EntityFrameworkCore;
+            // use Microsoft.EntityFrameworkCore;
             // DI Dependency Injection
             services.AddDbContext<DatabaseContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("ConnectionSQLServer")));
-            
+            // use DI for service of IProductService
+            services.AddTransient<IProductService, ProductServices>();
 
         }
 

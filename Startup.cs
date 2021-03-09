@@ -71,6 +71,8 @@ namespace Hero_Project
             //Middleware 
             //redirect http to https
             app.UseHttpsRedirection();
+            //access image by path
+            app.UseStaticFiles();
             //routing
             app.UseRouting();
             //authen

@@ -55,9 +55,15 @@ namespace Hero_Project.Controllers
 
         [HttpPost] //localhost:5001/products (json form)
         public async Task<ActionResult<Product>> AddProduct([FromForm] ProductRequest productRequest) {
-            
+            //upload image
+            (string errorMessage, string imageName) = await productService.UploadImage(productRequest.FormFiles);
+            if (!String.IsNullOrEmpty(errorMessage)) {
+                return BadRequest(); //status 400
+            }
             //using mapster.7.1.5 map data from productRequest to product
             var product = productRequest.Adapt<Product>();
+            //add imageName to table of product
+            product.Image = imageName;
             await productService.Create(product);
             return StatusCode((int) HttpStatusCode.Created);
         }
@@ -74,7 +80,17 @@ namespace Hero_Project.Controllers
             if (product == null){
                 return NotFound(); //return status 404
             }
-            
+            //upload new image
+            (string errorMessage, string imageName) = await productService.UploadImage(productRequest.FormFiles);
+            if (!String.IsNullOrEmpty(errorMessage)) {
+                return BadRequest(); //status 400
+            }
+
+            //when don not upload new image
+            if (!String.IsNullOrEmpty(imageName)){
+                product.Image = imageName;
+            }
+
             //map data usign mapster 7.1.5 between productRequest and result (source Adapt destination)
             productRequest.Adapt(product);
             await productService.Update(product);

@@ -49,7 +49,7 @@ namespace Hero_Project
         //last name of Interfaces filename has Service word will DI to Regiter by Autofac (6.1.0)
         public void ConfigureContainer(ContainerBuilder builder){
             builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
-            .Where(t => t.Name.EndsWith("Services"))
+            .Where(t => t.Name.EndsWith("Service"))
             .AsImplementedInterfaces();
         }
 

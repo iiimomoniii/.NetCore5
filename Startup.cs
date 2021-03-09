@@ -1,7 +1,9 @@
+using System.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Autofac;
 using Hero_Project.Data;
 using Hero_Project.NetCore5.Interfaces;
 using Hero_Project.NetCore5.Services;
@@ -40,9 +42,15 @@ namespace Hero_Project
             // DI Dependency Injection
             services.AddDbContext<DatabaseContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("ConnectionSQLServer")));
-            // use DI for service of IProductService
-            services.AddTransient<IProductService, ProductServices>();
 
+
+        }
+
+        //last name of Interfaces filename has Service word will DI to Regiter by Autofac (6.1.0)
+        public void ConfigureContainer(ContainerBuilder builder){
+            builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
+            .Where(t => t.Name.EndsWith("Services"))
+            .AsImplementedInterfaces();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

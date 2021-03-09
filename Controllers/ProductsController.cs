@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using Hero_Project.NetCore5.DTOs.Products;
 using Mapster;
+using Hero_Project.NetCore5.Interfaces;
 
 namespace Hero_Project.Controllers
 {
@@ -17,86 +18,78 @@ namespace Hero_Project.Controllers
     [Route("[controller]")] //...localhost:5001/products (dev)
     public class ProductsController : ControllerBase
     {
-        private readonly DatabaseContext databaseContext;
-        public ProductsController(DatabaseContext databaseContext) => this.databaseContext = databaseContext;
+     
+        private readonly IProductService productService;
+        public ProductsController(IProductService  productService) => this.productService = productService;
 
         [HttpGet] //localhost:5001/products
         //Return Values By ProductResponse
-        public ActionResult<IEnumerable<ProductResponse>> GetProducts()
+        public async Task<ActionResult<IEnumerable<ProductResponse>>> GetProducts()
         {
-        // Products.Include (p => p.category) joining data between Products and Category
-           return databaseContext.Products.Include(p => p.Category)
-           .OrderByDescending(p => p.ProductId)
-           // type of return data obj
-           .Select(ProductResponse.FromProduct)
-           .ToList();
+           //use async function findAll and response data by DTO (ProductResponse.FromProduct) 
+           return  (await productService.FindAll())
+                    .Select(ProductResponse.FromProduct)
+                    .ToList();
         }
 
         [HttpGet("{id}")] //localhost:5001/products/123
-        public ActionResult<ProductResponse> GetProductById(int id) {
-            // Products.Include (p => p.category) joining data between Products and Category
-            var result = databaseContext.Products.Include(p => p.Category)
-            //SingleOrDefault is WHERE in SQL if more and less then id will retern is null
-            //p => p.ProductId == id is return ONLY one productId is equal id
-            .SingleOrDefault(p => p.ProductId == id);
-            if (result == null) {
+        public async Task<ActionResult<ProductResponse>> GetProductById(int id) {
+           
+           var product = await productService.FindById(id);
+            if (product == null) {
                 return NotFound();
             } else {
-                //retun Product Obj is productId is equal id
-                return ProductResponse.FromProduct(result);
+                //return product and map product to ProductResponse
+                return product.Adapt<ProductResponse>();
             }
 
         }
 
         [HttpGet("search")] //localhost:5001/products/search?name=iWatch
-        public ActionResult<IEnumerable<ProductResponse>> SearchProducts([FromQuery] string name = "") {
+        public async Task<ActionResult<IEnumerable<ProductResponse>>> SearchProducts([FromQuery] string name = "") {
             // Products.Include (p => p.category) joining data between Products and Category
-            var result = databaseContext.Products.Include(p => p.Category)
-                         .Where(p => p.Name.ToLower().Contains(name.ToLower()))
-                         //p => p.ProductId == id is return Name LIKE (SQL) name 
-                         .Select(ProductResponse.FromProduct)
-                         .ToList();
-            return result;
+            return  (await productService.Search(name))
+                    .Select(ProductResponse.FromProduct)
+                    .ToList();
         }
 
         [HttpPost] //localhost:5001/products (json form)
-        public ActionResult<Product> AddProduct([FromForm] ProductRequest productRequest) {
+        public async Task<ActionResult<Product>> AddProduct([FromForm] ProductRequest productRequest) {
             
             //using mapster.7.1.5 map data from productRequest to product
             var product = productRequest.Adapt<Product>();
-            databaseContext.Products.Add(product);
-            databaseContext.SaveChanges();
+            await productService.Create(product);
             return StatusCode((int) HttpStatusCode.Created);
         }
         
         [HttpPut("{id}")] //localhost:5001/products/123
-        public ActionResult<Product> UpdateProduct(int id,[FromForm] ProductRequest productRequest) {
+        public async Task<ActionResult<Product>> UpdateProduct(int id,[FromForm] ProductRequest productRequest) {
             if (id != productRequest.ProductId){
                 return BadRequest(); //return status 400
             }
 
-            var result = databaseContext.Products.Find(id);
+            //get product
+            var product = await productService.FindById(id);
 
-            if (result == null){
+            if (product == null){
                 return NotFound(); //return status 404
             }
             
             //map data usign mapster 7.1.5 between productRequest and result (source Adapt destination)
-            productRequest.Adapt(result);
-
-            databaseContext.Products.Update(result);
-            databaseContext.SaveChanges();
-
+            productRequest.Adapt(product);
+            await productService.Update(product);
             return NoContent(); //return model
         }
 
         [HttpDelete("{id}")] //localhost:5001/products/123
-        public ActionResult<Product> DeleteProduct(int id)
+        public async Task<ActionResult<Product>> DeleteProduct(int id)
         {
-           if (id != 1150) {
-               return NotFound();
-           }
-           return NoContent();
+            var product = await productService.FindById(id);
+            if ( product == null) {
+                return NotFound();
+            }
+            await productService.Delete(product);
+            return NoContent();
         }
         
     }

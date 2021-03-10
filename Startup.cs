@@ -17,6 +17,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Hero_Project.NetCore5.Installers_Libraries;
 
 namespace Hero_Project
 {
@@ -32,16 +33,10 @@ namespace Hero_Project
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
-            services.AddControllers();
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Hero_Project", Version = "v1" });
-            });
-            // use Microsoft.EntityFrameworkCore;
-            // DI Dependency Injection
-            services.AddDbContext<DatabaseContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("ConnectionSQLServer")));
+            services.InstallServiceInAssembly(Configuration);
+           
+          
+           
 
 
         }

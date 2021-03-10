@@ -17,9 +17,14 @@ namespace Hero_Project.NetCore5.Services
             this.databaseContext = databaseContext;
         }
 
-        public Task Login(string username, string password)
+        public  async Task<Account> Login(string username, string password)
         {
-            throw new System.NotImplementedException();
+            var account = await databaseContext.Accounts.Include(a => a.Role)
+                                .SingleOrDefaultAsync(a => a.Username == username);
+            if (account != null && VerifyPassword(account.Password, password)) {
+                return account;
+            }
+            return null;
         }
 
         public async Task Register(Account account)

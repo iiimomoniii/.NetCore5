@@ -11,11 +11,13 @@ using Microsoft.EntityFrameworkCore;
 using Hero_Project.NetCore5.DTOs.Products;
 using Mapster;
 using Hero_Project.NetCore5.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Hero_Project.Controllers
 {
     [ApiController]
     [Route("[controller]")] //...localhost:5001/products (dev)
+    [Authorize(Roles = "Admin, Cashier")]
     public class ProductsController : ControllerBase
     {
      

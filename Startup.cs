@@ -71,6 +71,8 @@ namespace Hero_Project
             //routing
             app.UseRouting();
             //authen
+            app.UseAuthentication();
+            //author
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

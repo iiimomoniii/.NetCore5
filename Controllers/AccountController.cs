@@ -4,6 +4,8 @@ using Hero_Project.Entities;
 using Hero_Project.NetCore5.DTOs.Account;
 using Hero_Project.NetCore5.Interfaces;
 using Mapster;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hero_Project.NetCore5.Controllers
@@ -34,8 +36,23 @@ namespace Hero_Project.NetCore5.Controllers
             if (account == null) {
                 return Unauthorized();
             }
-            return Ok(new { token = "asfhdfdfajkh"});
+            return Ok(new { token = accountService.GenerateToken(account)});
         }
+        
+        [HttpGet("[action]")]
+        public async Task<ActionResult> Info()
+        {
+            var accessToken = await HttpContext.GetTokenAsync("access_token");
+            if(accessToken == null) {
+                return Unauthorized();
+            }
+            var account = accountService.GetInfo(accessToken);
+            return Ok( new {
+                username = account.Username,
+                role = account.Role.Name
+            });
+        }
+        
 
     }
 }

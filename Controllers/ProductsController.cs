@@ -17,7 +17,7 @@ namespace Hero_Project.Controllers
 {
     [ApiController]
     [Route("[controller]")] //...localhost:5001/products (dev)
-    [Authorize(Roles = "Admin, Cashier")]
+    [Authorize(Roles = "Admin, Cashier, Member")]
     public class ProductsController : ControllerBase
     {
      

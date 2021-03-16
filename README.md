@@ -9,3 +9,6 @@ installation
 
 ## How to connect
 - dotnet ef dbcontext scaffold "Server=localhost,1433;user id=sa; password=Tel1234!; Database=istock;" Microsoft.EntityFrameworkCore.SqlServer -o Entities -c DatabaseContext --context-dir Data
+## DB Script
+
+iiimomoniii/DB .NetCore5

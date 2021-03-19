@@ -15,3 +15,13 @@ installation
 ## DB Script
 
 iiimomoniii/DB .NetCore5
+
+
+## Nuget Package installed
+Autofac	6.1.0	
+Autofac.Extensions.DependencyInjection	7.1.0	
+Mapster	7.1.5	
+Microsoft.AspNetCore.Authentication.JwtBearer	5.0.4	
+Microsoft.EntityFrameworkCore.Design	5.0.3	 
+Microsoft.EntityFrameworkCore.SqlServer	5.0.3	
+Swashbuckle.AspNetCore

@@ -24,4 +24,4 @@ iiimomoniii/DB .NetCore5
 - Microsoft.AspNetCore.Authentication.JwtBearer	5.0.4	
 - Microsoft.EntityFrameworkCore.Design	5.0.3	 
 - Microsoft.EntityFrameworkCore.SqlServer	5.0.3	
-- Swashbuckle.AspNetCore
+- Swashbuckle.AspNetCore 5.6.3

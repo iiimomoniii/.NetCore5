@@ -12,6 +12,7 @@ using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 using static Hero_Project.NetCore5.Installers_Libraries.JWTInstaller;
 using Microsoft.IdentityModel.Tokens;
+using Hero_Project.NetCore5.Exceptions;
 
 namespace Hero_Project.NetCore5.Services
 {
